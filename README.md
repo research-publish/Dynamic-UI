@@ -5,12 +5,11 @@ To build a dynamic UI in Angular where users can build and configure their own p
 ## Create a widget library:
 To create a widget library, you can create reusable Angular components that represent the widgets. You can use Angular Material components as a starting point for building your own widgets. You can also use third-party widget libraries such as ng-bootstrap, PrimeNG, or ngx-widgets.
 
-Sure, let's dive deeper into creating a widget library.
+### creating a widget library 
 
 Create a new component for each widget in the library. For example, create a ButtonComponent, CheckboxComponent, and InputComponent.
 Add the new components to the entryComponents array in the app.module.ts file:
-python
-Copy code
+'''
 import { ButtonComponent } from './button/button.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
 import { InputComponent } from './input/input.component';
@@ -43,6 +42,7 @@ import { InputComponent } from './input/input.component';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
+'''
 In this example, the ButtonComponent, CheckboxComponent, and InputComponent are added to the entryComponents array.
 
 Modify the WidgetService to use a factory method to create the widget components dynamically:
