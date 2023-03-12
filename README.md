@@ -45,9 +45,8 @@ export class AppModule { }
 ```
 In this example, the ButtonComponent, CheckboxComponent, and InputComponent are added to the entryComponents array.
 
-Modify the WidgetService to use a factory method to create the widget components dynamically:
-typescript
-Copy code
+### Modify the WidgetService to use a factory method to create the widget components dynamically:
+```
 import { Injectable, ComponentFactoryResolver, Type } from '@angular/core';
 import { ButtonComponent } from './button/button.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
@@ -70,11 +69,11 @@ export class WidgetService {
     return componentFactory;
   }
 }
+```
 In this example, the WidgetService uses a Map to store the widget components and their corresponding types. The createWidgetComponent() method takes a widget type and returns a component factory using the ComponentFactoryResolver.
 
-Modify the WidgetComponent to use the WidgetService to create the widget components dynamically:
-typescript
-Copy code
+### Modify the WidgetComponent to use the WidgetService to create the widget components dynamically:
+```
 import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { WidgetService } from '../widget.service';
 
@@ -96,6 +95,7 @@ export class WidgetComponent implements OnInit {
     componentRef.instance.widget = this.widget;
   }
 }
+```
 In this example, the WidgetComponent uses the WidgetService to create the widget components dynamically. The ngOnInit() method uses the createWidgetComponent() method to create a component factory based on the widget type, and then creates a component instance using the createComponent() method of the ViewContainerRef.
 
 With these changes, you should now have a fully functional widget library that can be used to create dynamic UI pages.
