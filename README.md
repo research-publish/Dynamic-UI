@@ -3,7 +3,105 @@
 To build a dynamic UI in Angular where users can build and configure their own pages, you can follow these general steps:
 
 ## Create a widget library:
-Create a library of widgets that users can select and add to their page design. Each widget should be a reusable Angular component that can be easily configured by the user.
+To create a widget library, you can create reusable Angular components that represent the widgets. You can use Angular Material components as a starting point for building your own widgets. You can also use third-party widget libraries such as ng-bootstrap, PrimeNG, or ngx-widgets.
+
+Sure, let's dive deeper into creating a widget library.
+
+Create a new component for each widget in the library. For example, create a ButtonComponent, CheckboxComponent, and InputComponent.
+Add the new components to the entryComponents array in the app.module.ts file:
+python
+Copy code
+import { ButtonComponent } from './button/button.component';
+import { CheckboxComponent } from './checkbox/checkbox.component';
+import { InputComponent } from './input/input.component';
+
+@NgModule({
+  declarations: [
+    AppComponent,
+    ButtonComponent,
+    CheckboxComponent,
+    InputComponent
+  ],
+  entryComponents: [
+    ButtonComponent,
+    CheckboxComponent,
+    InputComponent
+  ],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatIconModule,
+    MatTooltipModule,
+    DragDropModule,
+    MatButtonModule,
+    MatCheckboxModule,
+    MatInputModule
+  ],
+  providers: [],
+  bootstrap: [AppComponent]
+})
+export class AppModule { }
+In this example, the ButtonComponent, CheckboxComponent, and InputComponent are added to the entryComponents array.
+
+Modify the WidgetService to use a factory method to create the widget components dynamically:
+typescript
+Copy code
+import { Injectable, ComponentFactoryResolver, Type } from '@angular/core';
+import { ButtonComponent } from './button/button.component';
+import { CheckboxComponent } from './checkbox/checkbox.component';
+import { InputComponent } from './input/input.component';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class WidgetService {
+  private widgetComponents: Map<string, Type<any>> = new Map<string, Type<any>>([
+    ['button', ButtonComponent],
+    ['checkbox', CheckboxComponent],
+    ['input', InputComponent],
+  ]);
+
+  constructor(private componentFactoryResolver: ComponentFactoryResolver) {}
+
+  createWidgetComponent(widgetType: string) {
+    const componentFactory = this.componentFactoryResolver.resolveComponentFactory(this.widgetComponents.get(widgetType));
+    return componentFactory;
+  }
+}
+In this example, the WidgetService uses a Map to store the widget components and their corresponding types. The createWidgetComponent() method takes a widget type and returns a component factory using the ComponentFactoryResolver.
+
+Modify the WidgetComponent to use the WidgetService to create the widget components dynamically:
+typescript
+Copy code
+import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { WidgetService } from '../widget.service';
+
+@Component({
+  selector: 'app-widget',
+  templateUrl: './widget.component.html',
+  styleUrls: ['./widget.component.css']
+})
+export class WidgetComponent implements OnInit {
+  @Input() widget: any;
+
+  @ViewChild('widgetContainer', { read: ViewContainerRef, static: true }) container: ViewContainerRef;
+
+  constructor(private widgetService: WidgetService) {}
+
+  ngOnInit() {
+    const componentFactory = this.widgetService.createWidgetComponent(this.widget.type);
+    const componentRef = this.container.createComponent(componentFactory);
+    componentRef.instance.widget = this.widget;
+  }
+}
+In this example, the WidgetComponent uses the WidgetService to create the widget components dynamically. The ngOnInit() method uses the createWidgetComponent() method to create a component factory based on the widget type, and then creates a component instance using the createComponent() method of the ViewContainerRef.
+
+With these changes, you should now have a fully functional widget library that can be used to create dynamic UI pages.
+
+
+
 ## Build a drag-and-drop interface:
 Create a drag-and-drop interface that allows users to add widgets to their page design. You can use Angular CDK's drag-and-drop functionality to build this interface.
 ## Allow widget configuration:
