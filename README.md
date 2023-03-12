@@ -334,7 +334,381 @@ By allowing widget configuration, you give the user more control over the page d
 Build a service that can save and fetch page designs from a database. This service should allow users to create, update, and delete their page designs.
 ## Allow users to configure backend REST service URLs:
 Add a UI that allows users to configure backend REST service URLs for each widget. This can be done by exposing an input field on each widget component and storing the URL in the widget's configuration.
+
+Angular dynamic UI:
+
+#### Add an input property to the widget components to allow the user to configure the REST service URL:
+```
+import { Component, Input } from '@angular/core';
+
+@Component({
+  selector: 'app-input',
+  templateUrl: './input.component.html',
+  styleUrls: ['./input.component.css']
+})
+export class InputComponent {
+  @Input() widget: any;
+  @Input() label: string;
+  @Input() value: string;
+  @Input() apiUrl: string;
+}
+```
+In this example, an apiUrl input property is added to the InputComponent to allow the user to configure the REST service URL for the input widget.
+
+#### Modify the WidgetComponent to pass the REST service URL to the widget components:
+```
+import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { WidgetService } from '../widget.service';
+
+@Component({
+  selector: 'app-widget',
+  templateUrl: './widget.component.html',
+  styleUrls: ['./widget.component.css']
+})
+export class WidgetComponent implements OnInit {
+  @Input() widget: any;
+  @Input() apiUrl: string;
+
+  @ViewChild('widgetContainer', { read: ViewContainerRef, static: true }) container: ViewContainerRef;
+
+  constructor(private widgetService: WidgetService) {}
+
+  ngOnInit() {
+    const componentFactory = this.widgetService.createWidgetComponent(this.widget.type);
+    const componentRef = this.container.createComponent(componentFactory);
+    componentRef.instance.widget = this.widget;
+    componentRef.instance.label = this.widget.config.label;
+    componentRef.instance.value = this.widget.config.value;
+    componentRef.instance.apiUrl = this.apiUrl;
+  }
+}
+```
+In this example, the WidgetComponent passes the REST service URL to the widget components using an input property.
+
+#### Add an input field to the UI page to allow the user to configure the REST service URL:
+```
+<mat-form-field appearance="fill">
+  <mat-label>API URL</mat-label>
+  <input matInput [(ngModel)]="apiUrl">
+</mat-form-field>
+```
+In this example, the mat-form-field and mat-label components are used to create a label for the input field, and the matInput directive is used to bind the input field to a apiUrl property in the component.
+
+#### Add a save button to the UI page to save the page design and the REST service URL to the database:
+```
+<button mat-raised-button color="primary" (click)="savePage()">Save</button>
+```
+In this example, the mat-raised-button and color attributes are used to create a button with a primary color, and the savePage() method is called when the button is clicked.
+
+#### Modify the PageService to save the REST service URL along with the page design:
+```
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PageService {
+  private pageSubject = new BehaviorSubject<any>({ widgets: [], apiUrl: '' });
+
+  setPage(page: any) {
+    this.pageSubject.next(page);
+  }
+
+  getPage(): Observable<any> {
+    return this.pageSubject.asObservable();
+  }
+
+  setApiUrl(apiUrl: string) {
+    const page = this.pageSubject.getValue();
+    page.apiUrl = apiUrl;
+    this.pageSubject.next(page);
+  }
+
+  getApiUrl(): Observable<string> {
+    return this.pageSubject.pipe(map(page => page.apiUrl));
+  }
+}
+```
+
+In this example, the PageService adds an apiUrl property to the page design object and provides methods to set and get the URL.
+
+#### Modify the PageComponent to use the PageService to set and get the REST service URL:
+```
+import { Component, OnInit } from '@angular/core';
+import { PageService } from '../page.service';
+
+@Component({
+  selector: 'app-page',
+  templateUrl: './page.component.html',
+  styleUrls: ['./page.component.css']
+})
+export class PageComponent implements OnInit {
+  widgets: any[] = [];
+  apiUrl: string;
+
+  constructor(private pageService: PageService) {}
+
+  ngOnInit() {
+    this.pageService.getPage().subscribe(page => {
+      this.widgets = page.widgets;
+      this.apiUrl = page.apiUrl;
+    });
+  }
+
+  savePage() {
+    const page = { widgets: this.widgets, apiUrl: this.apiUrl };
+    this.pageService.setPage(page);
+  }
+
+  setApiUrl() {
+    this.pageService.setApiUrl(this.apiUrl);
+  }
+}
+```
+In this example, the PageComponent subscribes to the PageService to get the page design and the REST service URL, and provides methods to save the page design and set the REST service URL.
+
+#### Use the apiUrl property in the widget components to configure the backend REST service:
+```
+import { Component, Input } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-input',
+  templateUrl: './input.component.html',
+  styleUrls: ['./input.component.css']
+})
+export class InputComponent {
+  @Input() widget: any;
+  @Input() label: string;
+  @Input() value: string;
+  @Input() apiUrl: string;
+
+  constructor(private http: HttpClient) {}
+
+  saveValue() {
+    const body = { value: this.value };
+    const url = `${this.apiUrl}/${this.widget.config.service}`;
+    this.http.post(url, body).subscribe(result => {
+      console.log(result);
+    });
+  }
+}
+```
+In this example, the InputComponent uses the apiUrl property to construct the backend REST service URL and sends an HTTP POST request to the server.
+
+That's a brief overview of how to allow users to configure backend REST service URLs in an Angular dynamic UI. Of course, the implementation details will depend on the specific requirements of your application.
+
+#### To allow users to configure multiple backend REST service URLs, you can modify the PageService and PageComponent to store and manage an array of URLs.
+
+Here's one approach:
+
+Modify the PageService to store an array of REST service URLs along with the page design:
+```
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PageService {
+  private pageSubject = new BehaviorSubject<any>({ widgets: [], apiUrls: [] });
+
+  setPage(page: any) {
+    this.pageSubject.next(page);
+  }
+
+  getPage(): Observable<any> {
+    return this.pageSubject.asObservable();
+  }
+
+  setApiUrls(apiUrls: string[]) {
+    const page = this.pageSubject.getValue();
+    page.apiUrls = apiUrls;
+    this.pageSubject.next(page);
+  }
+
+  getApiUrls(): Observable<string[]> {
+    return this.pageSubject.pipe(map(page => page.apiUrls));
+  }
+}
+```
+In this example, the PageService stores an array of REST service URLs in the apiUrls property of the page design object, and provides methods to set and get the URLs.
+
+#### Modify the PageComponent to use the PageService to set and get the REST service URLs:
+```
+import { Component, OnInit } from '@angular/core';
+import { PageService } from '../page.service';
+
+@Component({
+  selector: 'app-page',
+  templateUrl: './page.component.html',
+  styleUrls: ['./page.component.css']
+})
+export class PageComponent implements OnInit {
+  widgets: any[] = [];
+  apiUrls: string[] = [];
+  currentApiUrlIndex = 0;
+
+  constructor(private pageService: PageService) {}
+
+  ngOnInit() {
+    this.pageService.getPage().subscribe(page => {
+      this.widgets = page.widgets;
+      this.apiUrls = page.apiUrls;
+    });
+  }
+
+  savePage() {
+    const page = { widgets: this.widgets, apiUrls: this.apiUrls };
+    this.pageService.setPage(page);
+  }
+
+  setApiUrls() {
+    this.pageService.setApiUrls(this.apiUrls);
+  }
+
+  setCurrentApiUrl(index: number) {
+    this.currentApiUrlIndex = index;
+  }
+
+  getCurrentApiUrl(): string {
+    return this.apiUrls[this.currentApiUrlIndex];
+  }
+}
+```
+In this example, the PageComponent subscribes to the PageService to get the page design and the array of REST service URLs, and provides methods to save the page design and set the REST service URLs. It also provides methods to set and get the current URL, which can be used by the widget components to configure the backend service.
+
+#### Modify the widget components to use the current REST service URL:
+```
+import { Component, Input } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+
+@Component({
+  selector: 'app-input',
+  templateUrl: './input.component.html',
+  styleUrls: ['./input.component.css']
+})
+export class InputComponent {
+  @Input() widget: any;
+  @Input() label: string;
+  @Input() value: string;
+  @Input() apiUrls: string[];
+  @Input() currentApiUrlIndex: number;
+
+  constructor(private http: HttpClient) {}
+
+  saveValue() {
+    const body = { value: this.value };
+    const url = `${this.apiUrls[this.currentApiUrlIndex]}/${this.widget.config.service}`;
+    this.http.post(url, body).subscribe(result => {
+      console.log(result);
+    });
+  }
+}
+```
+
+In this example, the InputComponent uses the currentApiUrlIndex property to get the current REST service URL from the apiUrls array and then builds the full URL by appending the service name from the widget configuration. It then sends a POST request to the URL with the value of the input field as the request body.
+
+By passing the apiUrls array and currentApiUrlIndex property down to the widget components, you can allow them to configure the backend service URLs based on the current user selection. This provides flexibility and extensibility to the application.
+
+Overall, allowing users to configure backend REST service URLs is a powerful feature that enables the application to adapt to different environments and use cases. By providing a flexible and extensible architecture for managing backend URLs, you can create an application that can be easily customized and scaled to meet the needs of a wide range of users.
+
 ## Build a preview and publish mechanism:
 Add a preview mode that allows users to see what their page design will look like before publishing it. Once the user is satisfied with the design, they can publish it, which will save it to the database and make it available for rendering.
 ## Render the page:
 Finally, create a component that can render the page design. This component should fetch the page design from the database and dynamically create and configure the widget components based on the design.
+Rendering the page involves dynamically creating and rendering the widgets based on the user's saved design. To achieve this, we can create a dynamic component that accepts the widget configuration as input and renders the corresponding widget based on the widget type.
+
+Create a DynamicWidgetComponent that will render the widgets based on the configuration:
+
+```
+import { Component, Input, OnInit } from '@angular/core';
+import { WidgetConfig } from './widget-config';
+
+@Component({
+  selector: 'app-dynamic-widget',
+  template: `
+    <ng-container [ngSwitch]="config.type">
+      <app-input-widget *ngSwitchCase="'input'" [config]="config"></app-input-widget>
+      <app-button-widget *ngSwitchCase="'button'" [config]="config"></app-button-widget>
+      <!-- add more cases for each widget type -->
+    </ng-container>
+  `,
+})
+export class DynamicWidgetComponent implements OnInit {
+  @Input() config: WidgetConfig;
+
+  constructor() {}
+
+  ngOnInit() {}
+}
+```
+In the component that will render the page, retrieve the user's saved design from the database and loop through the list of widget configurations. For each widget configuration, create an instance of the DynamicWidgetComponent and pass the widget configuration as input.
+```
+import { Component, OnInit, ViewChild, ViewContainerRef, ComponentFactoryResolver } from '@angular/core';
+import { WidgetConfig } from './widget-config';
+import { DynamicWidgetComponent } from './dynamic-widget.component';
+
+@Component({
+  selector: 'app-page-renderer',
+  template: `<ng-container #widgetContainer></ng-container>`,
+})
+export class PageRendererComponent implements OnInit {
+  @ViewChild('widgetContainer', { read: ViewContainerRef }) widgetContainer: ViewContainerRef;
+
+  widgetConfigs: WidgetConfig[];
+
+  constructor(private resolver: ComponentFactoryResolver) {}
+
+  ngOnInit() {
+    // retrieve user's saved design from database
+    this.widgetConfigs = this.retrieveSavedDesignFromDatabase();
+
+    // loop through widget configs and create dynamic components
+    for (const config of this.widgetConfigs) {
+      const factory = this.resolver.resolveComponentFactory(DynamicWidgetComponent);
+      const componentRef = this.widgetContainer.createComponent(factory);
+      componentRef.instance.config = config;
+    }
+  }
+
+  private retrieveSavedDesignFromDatabase(): WidgetConfig[] {
+    // retrieve saved design from database and return as an array of widget configurations
+  }
+}
+```
+In the DynamicWidgetComponent, create a separate component for each widget type and pass the widget configuration to the corresponding component. This will allow each widget to handle its own rendering logic.
+```
+import { Component, Input } from '@angular/core';
+import { WidgetConfig } from './widget-config';
+
+@Component({
+  selector: 'app-input-widget',
+  template: `
+    <label>{{ config.label }}</label>
+    <input type="{{ config.inputType }}" [(ngModel)]="value" />
+    <button (click)="submit()">Submit</button>
+  `,
+})
+export class InputWidgetComponent {
+  @Input() config: WidgetConfig;
+
+  value: string;
+
+  constructor(private widgetService: WidgetService) {}
+
+  submit() {
+    const apiUrl = this.widgetService.getApiUrl(this.config.apiService);
+    this.widgetService.postData(apiUrl, this.value).subscribe(() => {
+      // handle success
+    }, error => {
+      // handle error
+    });
+  }
+}
+```
+By creating a dynamic component that renders widgets based on their configuration, you can create a flexible and extensible page rendering system that can be easily customized to meet the needs of a wide range of users.
+
+
+
