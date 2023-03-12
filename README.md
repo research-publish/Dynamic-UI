@@ -9,7 +9,7 @@ To create a widget library, you can create reusable Angular components that repr
 
 Create a new component for each widget in the library. For example, create a ButtonComponent, CheckboxComponent, and InputComponent.
 Add the new components to the entryComponents array in the app.module.ts file:
-'''
+```
 import { ButtonComponent } from './button/button.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
 import { InputComponent } from './input/input.component';
@@ -42,7 +42,7 @@ import { InputComponent } from './input/input.component';
   bootstrap: [AppComponent]
 })
 export class AppModule { }
-'''
+```
 In this example, the ButtonComponent, CheckboxComponent, and InputComponent are added to the entryComponents array.
 
 Modify the WidgetService to use a factory method to create the widget components dynamically:
