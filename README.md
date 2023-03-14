@@ -1,5 +1,28 @@
 # Dynamic-UI
 
+Explaination of the components and how they interact:
+
+### Front-end: 
+The user interface for the dynamic UI builder, built with Angular. Users can drag-and-drop widgets, configure their properties, and create pages. They can also preview and publish their designs.
+
+#### Widget Library:
+A library of pre-built widgets that users can drag-and-drop onto the page. The widgets are implemented as Angular components.
+
+#### Backend API: 
+A RESTful API built with a server-side framework like Node.js or Spring Boot. This API handles requests from the front-end to save and retrieve page designs.
+
+#### Database: 
+A database like MySQL or MongoDB to store page designs created by users.
+
+#### Page Design Service: 
+A service that manages page designs. This service communicates with the backend API to save and retrieve designs from the database.
+
+#### Preview Service: 
+A service that generates a preview of a page design. This service uses the same Angular components as the front-end, but renders them on the server-side.
+
+#### Publish Service: 
+A service that publishes a page design. This service exports the page design as HTML and uploads it to a web server or cloud storage service.
+
 To build a dynamic UI in Angular where users can build and configure their own pages, you can follow these general steps:
 
 - Start by setting up a new Angular project using the Angular CLI.
