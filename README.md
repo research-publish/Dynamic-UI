@@ -2,6 +2,16 @@
 
 To build a dynamic UI in Angular where users can build and configure their own pages, you can follow these general steps:
 
+- Start by setting up a new Angular project using the Angular CLI.
+Create a data model for widgets, which should include properties like name, description, and configuration options.
+Create a widget library by creating components for each widget type.
+Implement drag-and-drop functionality to allow users to drag widgets onto a canvas and arrange them as they like.
+Implement widget configuration by allowing users to click on a widget and configure its properties.
+Create a service to manage page designs, which should include methods to create, update, retrieve, and delete page designs.
+Allow users to configure backend REST service URLs for each widget.
+Implement a preview mechanism that allows users to see what their page will look like before publishing it.
+Implement a publish mechanism that saves the page design to the database and makes it available for viewing.
+
 ## 1. Create a widget library:
 To create a widget library, you can create reusable Angular components that represent the widgets. You can use Angular Material components as a starting point for building your own widgets. You can also use third-party widget libraries such as ng-bootstrap, PrimeNG, or ngx-widgets.
 
