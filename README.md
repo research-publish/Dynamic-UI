@@ -332,6 +332,126 @@ By allowing widget configuration, you give the user more control over the page d
 
 ## 4. Build a service to manage page designs:
 Build a service that can save and fetch page designs from a database. This service should allow users to create, update, and delete their page designs.
+
+Building a service to manage page designs involves creating a backend system that allows users to create and modify page layouts, as well as manage the widgets and their configurations within those layouts. Here are the key steps involved in building such a service:
+
+#### Define a data model:
+The first step is to define a data model that will represent the pages and widgets that will be managed by the service. This model should include information about the layout of each page, such as the position and size of each widget on the page, as well as the configuration of each widget.
+
+#### Create REST endpoints: 
+The service should expose REST endpoints that allow clients to create, read, update, and delete pages and widgets. These endpoints should map to the relevant CRUD operations for each entity in the data model.
+
+#### Implement CRUD operations: 
+The next step is to implement the CRUD operations for each entity in the data model. This involves defining the logic for creating, reading, updating, and deleting pages and widgets in the database.
+
+#### Add authentication and authorization: 
+It's important to secure the service by adding authentication and authorization mechanisms. This can be done by implementing user authentication and authorization using techniques such as JWT tokens.
+
+#### Implement business logic: 
+The service should implement business logic to handle operations such as widget configuration, page layout management, and widget placement.
+
+#### Use a database: 
+The service should use a database to store page and widget information. This can be done using a relational database such as MySQL, PostgreSQL, or SQLite, or a NoSQL database such as MongoDB or Cassandra.
+
+#### Create a UI: 
+Finally, you should create a UI that allows users to interact with the service. 
+
+We will be using MongoDB as the database, and the mongoose package to interact with the database. Here are the steps to set up the database:
+1. Install mongoose and @types/mongoose packages using npm:
+```
+npm install mongoose @types/mongoose
+```
+
+2. Create a PageDesign schema in a new file page-design.model.ts:
+
+```
+import { Schema, model } from 'mongoose';
+
+const pageDesignSchema = new Schema({
+  name: String,
+  widgets: [Object],
+  createdDate: { type: Date, default: Date.now },
+});
+
+export const PageDesign = model('PageDesign', pageDesignSchema);
+```
+In this example, the PageDesign schema defines a name, widgets, and created date fields for each page design.
+
+Modify the PageDesignService to use mongoose to interact with the database:
+```
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { PageDesign } from './page-design.model';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class PageDesignService {
+  private baseUrl = '/api/page-designs';
+
+  constructor(private http: HttpClient) {}
+
+  savePageDesign(pageDesign: PageDesign): Observable<PageDesign> {
+    return this.http.post<PageDesign>(this.baseUrl, pageDesign);
+  }
+
+  getPageDesigns(): Observable<PageDesign[]> {
+    return this.http.get<PageDesign[]>(this.baseUrl);
+  }
+}
+```
+In this example, the PageDesignService uses the HttpClient to make HTTP requests to the /api/page-designs API endpoint. The savePageDesign() method sends a POST request to save a new page design, and the getPageDesigns() method sends a GET request to retrieve all page designs.
+
+3. Modify the API endpoint in the server.js file to use mongoose to interact with the database: (Below one can be written in Springboot)
+```
+const express = require('express');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const mongoose = require('mongoose');
+
+const app = express();
+app.use(bodyParser.json());
+app.use(cors());
+
+const PageDesign = mongoose.model('PageDesign', {
+  name: String,
+  widgets: [Object],
+  createdDate: { type: Date, default: Date.now },
+});
+
+mongoose.connect('mongodb://localhost:27017/page-designs', { useNewUrlParser: true });
+const db = mongoose.connection;
+db.once('open', () => console.log('Connected to MongoDB'));
+
+app.post('/api/page-designs', (req, res) => {
+  const pageDesign = new PageDesign(req.body);
+  pageDesign.save((err) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Error saving page design');
+    } else {
+      res.json(pageDesign);
+    }
+  });
+});
+```
+app.get('/api/page-designs', (req, res) => {
+  PageDesign.find((err, pageDesigns) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Error retrieving page designs');
+    } else {
+      res.json(pageDesigns);
+    }
+  });
+});
+
+app.listen(3000, () => console.log('Server started on port 3000'));
+```
+In this example, the PageDesign model is defined using mongoose. The mongoose.connect() method is used to connect to the page-designs database on the local MongoDB server. The API endpoint methods are modified to use `Page
+  
+  
 ## 5. Allow users to configure backend REST service URLs:
 Add a UI that allows users to configure backend REST service URLs for each widget. This can be done by exposing an input field on each widget component and storing the URL in the widget's configuration.
 
