@@ -2,7 +2,7 @@
 
 To build a dynamic UI in Angular where users can build and configure their own pages, you can follow these general steps:
 
-## Create a widget library:
+## 1. Create a widget library:
 To create a widget library, you can create reusable Angular components that represent the widgets. You can use Angular Material components as a starting point for building your own widgets. You can also use third-party widget libraries such as ng-bootstrap, PrimeNG, or ngx-widgets.
 
 ### creating a widget library 
@@ -102,7 +102,7 @@ With these changes, you should now have a fully functional widget library that c
 
 
 
-## Build a drag-and-drop interface:
+## 2. Build a drag-and-drop interface:
 Create a drag-and-drop interface that allows users to add widgets to their page design. You can use Angular CDK's drag-and-drop functionality to build this interface.
 
 ### Create a draggable directive
@@ -215,7 +215,7 @@ In this example, we're logging the dropped element to the console. However, we c
 
 Overall, building a drag-and-drop interface in Angular involves using the Draggable and Droppable directives provided by the @ng-draggable library, defining event handlers to handle the dropped elements, and implementing the necessary actions based on the dropped element.
 
-## Allow widget configuration:
+## 3. Allow widget configuration:
 Allow users to configure each widget they add to their page design. This can be done by exposing configurable properties on the widget components and providing a UI for the user to modify them.
 
 allowing widget configuration involves providing users with the ability to customize the appearance and functionality of each widget they add to the page. To achieve this, we can use a combination of templates, data binding, and dynamic component creation.
@@ -330,9 +330,9 @@ By allowing widget configuration, you give the user more control over the page d
 
 
 
-## Build a service to manage page designs:
+## 4. Build a service to manage page designs:
 Build a service that can save and fetch page designs from a database. This service should allow users to create, update, and delete their page designs.
-## Allow users to configure backend REST service URLs:
+## 5. Allow users to configure backend REST service URLs:
 Add a UI that allows users to configure backend REST service URLs for each widget. This can be done by exposing an input field on each widget component and storing the URL in the widget's configuration.
 
 Angular dynamic UI:
@@ -614,7 +614,7 @@ By passing the apiUrls array and currentApiUrlIndex property down to the widget 
 
 Overall, allowing users to configure backend REST service URLs is a powerful feature that enables the application to adapt to different environments and use cases. By providing a flexible and extensible architecture for managing backend URLs, you can create an application that can be easily customized and scaled to meet the needs of a wide range of users.
 
-## Build a preview and publish mechanism:
+## 6. Build a preview and publish mechanism:
 Add a preview mode that allows users to see what their page design will look like before publishing it. Once the user is satisfied with the design, they can publish it, which will save it to the database and make it available for rendering.
 
 Building a preview and publish mechanism involves allowing users to preview the design they have created and publish it when they are ready to deploy it. Here are some steps and code examples for implementing this feature:
