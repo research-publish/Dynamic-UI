@@ -23,8 +23,8 @@ A service that generates a preview of a page design. This service uses the same 
 #### Publish Service: 
 A service that publishes a page design. This service exports the page design as HTML and uploads it to a web server or cloud storage service.
 
-To build a dynamic UI in Angular where users can build and configure their own pages, you can follow these general steps:
-
+**To build a dynamic UI in Angular where users can build and configure their own pages, you can follow these general steps:
+**
 - Start by setting up a new Angular project using the Angular CLI.
 - Create a data model for widgets, which should include properties like name, description, and configuration options.
 - Create a widget library by creating components for each widget type.
